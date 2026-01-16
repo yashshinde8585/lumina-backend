@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-console.log('✅ apiRoutes loaded');
+
 const { generate } = require('../controllers/resumeController');
 const authRoutes = require('./authRoutes');
 

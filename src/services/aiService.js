@@ -21,7 +21,7 @@ const generateResume = async (jd, level, template) => {
     `;
 
     try {
-        console.log("Attempting to generate with Google Gemini: gemini-pro");
+
 
         const prompt = promptBuilder(jd, level);
         const model = genAI.getGenerativeModel({
@@ -35,13 +35,13 @@ const generateResume = async (jd, level, template) => {
         const response = await result.response;
         const responseContent = response.text();
 
-        console.log("Raw AI Response Length:", responseContent.length);
+
 
         let parsed;
         try {
             parsed = JSON.parse(responseContent);
         } catch (e) {
-            console.warn("Direct JSON parse failed, attempting cleanup...");
+
             let text = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
             const firstCurly = text.indexOf('{');
             const lastCurly = text.lastIndexOf('}');
@@ -97,8 +97,7 @@ const generateResume = async (jd, level, template) => {
         return validatedData;
 
     } catch (error) {
-        console.error("AI Service Error:", error.message);
-        console.warn("⚠️  Falling back to MOCK RESUME due to API Error.");
+
         return FALLBACK_RESUME;
     }
 };

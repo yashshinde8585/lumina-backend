@@ -12,11 +12,11 @@ if (!JWT_SECRET) {
     if (process.env.NODE_ENV === 'production') {
         throw new Error('FATAL: JWT_SECRET is not defined in environment variables.');
     } else {
-        console.warn('⚠️  WARNING: JWT_SECRET is missing. Using insecure default for development only.');
+
     }
 }
 
-const EFFECTIVE_JWT_SECRET = JWT_SECRET || 'dev-secret-key-123';
+
 
 exports.signup = async (req, res) => {
     try {
@@ -53,7 +53,7 @@ exports.signup = async (req, res) => {
             email: newUser.email
         });
     } catch (error) {
-        console.error('Signup Error:', error);
+
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
@@ -86,7 +86,7 @@ exports.login = async (req, res) => {
             email: user.email
         });
     } catch (error) {
-        console.error('Login Error:', error);
+
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
@@ -145,7 +145,33 @@ exports.googleLogin = async (req, res) => {
         res.status(200).json(responseData);
 
     } catch (error) {
-        console.error('Google Login Error:', error);
+
         res.status(500).json({ message: 'Google authentication failed', error: error.message });
+    }
+};
+
+exports.getBoard = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.userData.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user.jobBoardData || []);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch board data', error: error.message });
+    }
+};
+
+exports.updateBoard = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.userData.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        user.jobBoardData = req.body.boardData;
+        await user.save();
+        res.status(200).json({ message: 'Board updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update board data', error: error.message });
     }
 };

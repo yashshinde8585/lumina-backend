@@ -28,6 +28,14 @@ const Resume = sequelize.define('Resume', {
     template: {
         type: DataTypes.STRING,
         defaultValue: 'modern'
+    },
+    fileUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    publicId: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: true,

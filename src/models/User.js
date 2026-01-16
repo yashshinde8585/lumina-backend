@@ -30,6 +30,10 @@ const User = sequelize.define('User', {
     authResponse: {
         type: DataTypes.JSON,
         allowNull: true
+    },
+    jobBoardData: {
+        type: DataTypes.JSON,
+        allowNull: true
     }
 }, {
     timestamps: true

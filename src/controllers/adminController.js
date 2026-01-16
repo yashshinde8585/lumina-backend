@@ -42,7 +42,7 @@ exports.getAllUsers = async (req, res) => {
             total: usersWithStats.length
         });
     } catch (error) {
-        console.error('Get Users Error:', error);
+
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'Failed to fetch users',
@@ -92,7 +92,7 @@ exports.getUserById = async (req, res) => {
             user: userWithStats
         });
     } catch (error) {
-        console.error('Get User Error:', error);
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch user',
@@ -137,7 +137,7 @@ exports.impersonateUser = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Impersonate User Error:', error);
+
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'Failed to impersonate user',
@@ -181,7 +181,7 @@ exports.updateUserCredits = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Update Credits Error:', error);
+
         res.status(500).json({
             success: false,
             message: 'Failed to update credits',
@@ -229,7 +229,7 @@ exports.getDashboardStats = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Get Stats Error:', error);
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch stats',
@@ -253,7 +253,7 @@ exports.getSystemLogs = async (req, res) => {
             logs
         });
     } catch (error) {
-        console.error('Get Logs Error:', error);
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch logs',
