@@ -3,19 +3,21 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const authMiddleware = require('../middleware/auth');
 
-// All admin routes require authentication
-// TODO: Add admin role check middleware
+const adminAuth = require('../middleware/adminAuth');
+
+// All admin routes require authentication AND admin role
+router.use(authMiddleware, adminAuth);
 
 // Dashboard stats
-router.get('/stats', authMiddleware, adminController.getDashboardStats);
+router.get('/stats', adminController.getDashboardStats);
 
 // User management
-router.get('/users', authMiddleware, adminController.getAllUsers);
-router.get('/users/:userId', authMiddleware, adminController.getUserById);
-router.post('/users/:userId/impersonate', authMiddleware, adminController.impersonateUser);
-router.patch('/users/:userId/credits', authMiddleware, adminController.updateUserCredits);
+router.get('/users', adminController.getAllUsers);
+router.get('/users/:userId', adminController.getUserById);
+router.post('/users/:userId/impersonate', adminController.impersonateUser);
+router.patch('/users/:userId/credits', adminController.updateUserCredits);
 
 // System logs
-router.get('/logs', authMiddleware, adminController.getSystemLogs);
+router.get('/logs', adminController.getSystemLogs);
 
 module.exports = router;

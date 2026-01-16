@@ -1,6 +1,7 @@
 const { Resume } = require('../models');
 const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
 const cloudinary = require('../config/cloudinary');
+const logger = require('../config/logger');
 
 
 exports.saveResume = async (req, res) => {
@@ -29,6 +30,7 @@ exports.saveResume = async (req, res) => {
         if (error.name === 'SequelizeValidationError') {
             return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Validation error', errors: error.errors.map(e => e.message) });
         }
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Failed to save resume', error: error.message });
     }
 };
@@ -43,7 +45,7 @@ exports.getResumes = async (req, res) => {
         });
         res.json(resumes);
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({ message: 'Failed to fetch resumes', error: error.message });
     }
 };
@@ -61,7 +63,7 @@ exports.getResumeById = async (req, res) => {
 
         res.json(resume);
     } catch (error) {
-
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Failed to fetch resume', error: error.message });
     }
 };
@@ -93,6 +95,7 @@ exports.deleteResume = async (req, res) => {
         await resume.destroy();
         res.json({ message: 'Resume deleted successfully' });
     } catch (error) {
+        logger.error(error);
         res.status(500).json({ message: 'Failed to delete resume', error: error.message });
     }
 };
@@ -123,7 +126,7 @@ exports.downloadResume = async (req, res) => {
         });
 
     } catch (error) {
-
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Download failed', error: error.message });
     }
 };
@@ -186,7 +189,7 @@ exports.uploadResumeFile = async (req, res) => {
         });
 
     } catch (error) {
-
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Upload failed', error: error.message });
     }
 };
@@ -255,7 +258,7 @@ exports.importResume = async (req, res) => {
         });
 
     } catch (error) {
-
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Import failed', error: error.message });
     }
 };

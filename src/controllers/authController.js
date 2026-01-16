@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+const logger = require('../config/logger');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -53,7 +54,7 @@ exports.signup = async (req, res) => {
             email: newUser.email
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
@@ -86,7 +87,7 @@ exports.login = async (req, res) => {
             email: user.email
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
@@ -138,14 +139,15 @@ exports.googleLogin = async (req, res) => {
             email: user.email
         };
 
-        // Store the full response JSON in the database as requested
-        user.authResponse = responseData;
-        await user.save();
+        // Store the full response JSON in the database is REDUNDANT and INSECURE.
+        // Removed as per production readiness review.
+        // user.authResponse = responseData;
+        // await user.save();
 
         res.status(200).json(responseData);
 
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({ message: 'Google authentication failed', error: error.message });
     }
 };
@@ -158,6 +160,7 @@ exports.getBoard = async (req, res) => {
         }
         res.status(200).json(user.jobBoardData || []);
     } catch (error) {
+        logger.error(error);
         res.status(500).json({ message: 'Failed to fetch board data', error: error.message });
     }
 };
@@ -172,6 +175,7 @@ exports.updateBoard = async (req, res) => {
         await user.save();
         res.status(200).json({ message: 'Board updated successfully' });
     } catch (error) {
+        logger.error(error);
         res.status(500).json({ message: 'Failed to update board data', error: error.message });
     }
 };

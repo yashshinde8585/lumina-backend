@@ -22,11 +22,19 @@ sequelize.authenticate()
         logger.info('📦 Connected to SQLite DB');
         // Manually check/add column for SQLite due to alter:true bugs
         const [results] = await sequelize.query("PRAGMA table_info(Users)");
-        const hasColumn = results.some(column => column.name === 'jobBoardData');
-        if (!hasColumn) {
+
+        const hasJobBoardColumn = results.some(column => column.name === 'jobBoardData');
+        if (!hasJobBoardColumn) {
             logger.info('Adding jobBoardData column to Users table...');
             await sequelize.query("ALTER TABLE Users ADD COLUMN jobBoardData JSON");
         }
+
+        const hasRoleColumn = results.some(column => column.name === 'role');
+        if (!hasRoleColumn) {
+            logger.info('Adding role column to Users table...');
+            await sequelize.query("ALTER TABLE Users ADD COLUMN role TEXT DEFAULT 'user'");
+        }
+
         return sequelize.sync();
     })
     .catch(err => logger.error('❌ DB Connection Error:', err));

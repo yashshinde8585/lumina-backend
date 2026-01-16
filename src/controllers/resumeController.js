@@ -1,5 +1,6 @@
 const { generateResume } = require('../services/aiService');
 const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
+const logger = require('../config/logger');
 
 const generate = async (req, res) => {
     const { jd, level } = req.body;
@@ -13,6 +14,7 @@ const generate = async (req, res) => {
         const resumeData = await generateResume(jd, level);
         res.json(resumeData);
     } catch (error) {
+        logger.error(error);
         let errorMessage = error.message || "Failed to generate resume.";
 
         if (errorMessage.includes("404") && errorMessage.includes("not found")) {

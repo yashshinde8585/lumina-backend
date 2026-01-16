@@ -3,6 +3,7 @@ const Resume = require('../models/Resume');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
+const logger = require('../config/logger');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key';
 
@@ -42,7 +43,7 @@ exports.getAllUsers = async (req, res) => {
             total: usersWithStats.length
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'Failed to fetch users',
@@ -92,7 +93,7 @@ exports.getUserById = async (req, res) => {
             user: userWithStats
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch user',
@@ -137,7 +138,7 @@ exports.impersonateUser = async (req, res) => {
             }
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'Failed to impersonate user',
@@ -181,7 +182,7 @@ exports.updateUserCredits = async (req, res) => {
             }
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({
             success: false,
             message: 'Failed to update credits',
@@ -229,7 +230,7 @@ exports.getDashboardStats = async (req, res) => {
             }
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch stats',
@@ -253,7 +254,7 @@ exports.getSystemLogs = async (req, res) => {
             logs
         });
     } catch (error) {
-
+        logger.error(error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch logs',

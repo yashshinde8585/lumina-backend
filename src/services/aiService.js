@@ -2,6 +2,7 @@ const { z } = require('zod');
 const genAI = require('../config/aiClient');
 const { promptBuilder } = require('../utils/promptBuilder');
 const { RESUME_RULES, AI_MODELS, RESUME_LEVELS } = require('../utils/constants');
+const logger = require('../config/logger');
 
 const { buildSystemInstruction, FALLBACK_RESUME } = require('../utils/aiTemplates');
 
@@ -97,7 +98,7 @@ const generateResume = async (jd, level, template) => {
         return validatedData;
 
     } catch (error) {
-
+        logger.error('Resyume Generation Failed:', error);
         return FALLBACK_RESUME;
     }
 };

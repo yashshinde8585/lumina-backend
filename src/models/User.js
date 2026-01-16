@@ -27,10 +27,14 @@ const User = sequelize.define('User', {
         type: DataTypes.INTEGER,
         defaultValue: 5
     },
-    authResponse: {
-        type: DataTypes.JSON,
-        allowNull: true
+    role: {
+        type: DataTypes.STRING,
+        defaultValue: 'user'
     },
+    // authResponse: {
+    //     type: DataTypes.JSON,
+    //     allowNull: true
+    // },
     jobBoardData: {
         type: DataTypes.JSON,
         allowNull: true
