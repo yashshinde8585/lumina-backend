@@ -20,22 +20,32 @@ const port = process.env.PORT || 5002;
 sequelize.authenticate()
     .then(async () => {
         logger.info('📦 Connected to SQLite DB');
-        // Manually check/add column for SQLite due to alter:true bugs
-        const [results] = await sequelize.query("PRAGMA table_info(Users)");
 
-        const hasJobBoardColumn = results.some(column => column.name === 'jobBoardData');
-        if (!hasJobBoardColumn) {
-            logger.info('Adding jobBoardData column to Users table...');
-            await sequelize.query("ALTER TABLE Users ADD COLUMN jobBoardData JSON");
+        // 1. Sync models FIRST to ensure tables exist
+        await sequelize.sync();
+
+        // 2. Perform Manual Migrations (safely)
+        try {
+            const [results] = await sequelize.query("PRAGMA table_info(Users)");
+
+            const hasJobBoardColumn = results.some(column => column.name === 'jobBoardData');
+            if (!hasJobBoardColumn) {
+                logger.info('Adding jobBoardData column to Users table...');
+                await sequelize.query("ALTER TABLE Users ADD COLUMN jobBoardData JSON");
+            }
+
+            const hasRoleColumn = results.some(column => column.name === 'role');
+            if (!hasRoleColumn) {
+                logger.info('Adding role column to Users table...');
+                await sequelize.query("ALTER TABLE Users ADD COLUMN role TEXT DEFAULT 'user'");
+            }
+        } catch (migrationError) {
+            // Ignore errors if table doesn't exist yet (though sync should prevent this)
+            // or if columns already exist.
+            logger.warn('Manual migration skipped or failed (safe to ignore if app works):', migrationError.message);
         }
 
-        const hasRoleColumn = results.some(column => column.name === 'role');
-        if (!hasRoleColumn) {
-            logger.info('Adding role column to Users table...');
-            await sequelize.query("ALTER TABLE Users ADD COLUMN role TEXT DEFAULT 'user'");
-        }
-
-        return sequelize.sync();
+        return;
     })
     .catch(err => logger.error('❌ DB Connection Error:', err));
 
