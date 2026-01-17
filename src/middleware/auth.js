@@ -13,7 +13,9 @@ module.exports = (req, res, next) => {
             return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Authentication failed: Invalid token format' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Use fallback if env is missing (matching authController logic for dev stability)
+        const secret = process.env.JWT_SECRET || 'dev_secret_fallback_123';
+        const decoded = jwt.verify(token, secret);
         req.userData = { userId: decoded.userId, email: decoded.email };
         next();
     } catch (error) {
