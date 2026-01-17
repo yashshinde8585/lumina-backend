@@ -35,13 +35,17 @@ const allowedOrigins = isProduction
     ? [process.env.FRONTEND_URL]
     : ['http://localhost:5173', 'http://localhost:3000'];
 
+logger.info(`🔧 CORS Configured for: ${allowedOrigins.join(', ')}`);
+
 app.use(cors({
     origin: (origin, callback) => {
         // Allow all in development, restrict in production
+        // Strict check: origin must exactly match one of the allowed origins
         if (!isProduction || !origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'));
+            logger.warn(`🚫 CORS Blocked Origin: ${origin}. Allowed: ${allowedOrigins}`);
+            callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
         }
     },
     credentials: true
