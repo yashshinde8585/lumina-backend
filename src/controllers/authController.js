@@ -13,9 +13,11 @@ if (!JWT_SECRET) {
     if (process.env.NODE_ENV === 'production') {
         throw new Error('FATAL: JWT_SECRET is not defined in environment variables.');
     } else {
-
+        logger.warn('⚠️  JWT_SECRET is not defined. Using insecure default for development.');
     }
 }
+// Always have a fallback for dev if env is missing
+const FINAL_JWT_SECRET = JWT_SECRET || 'dev_secret_fallback_123';
 
 
 
@@ -42,7 +44,7 @@ exports.signup = async (req, res) => {
 
         const token = jwt.sign(
             { userId: newUser.id, email: newUser.email },
-            JWT_SECRET,
+            FINAL_JWT_SECRET,
             { expiresIn: '14d' }
         );
 
@@ -75,7 +77,7 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign(
             { userId: user.id, email: user.email },
-            JWT_SECRET,
+            FINAL_JWT_SECRET,
             { expiresIn: '14d' }
         );
 
@@ -127,7 +129,7 @@ exports.googleLogin = async (req, res) => {
 
         const token = jwt.sign(
             { userId: user.id, email: user.email },
-            JWT_SECRET,
+            FINAL_JWT_SECRET,
             { expiresIn: '14d' }
         );
 
