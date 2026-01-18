@@ -27,7 +27,11 @@ const generateResume = async (jd, level, template) => {
         const prompt = promptBuilder(jd, level);
         const model = genAI.getGenerativeModel({
             model: AI_MODELS.GEMINI_PRO,
-            generationConfig: { responseMimeType: "application/json" }
+            generationConfig: {
+                responseMimeType: "application/json",
+                temperature: 0.4,
+                maxOutputTokens: 2048,
+            }
         });
 
         const fullPrompt = `${systemInstruction}\n${templateInstruction}\n\n${prompt}`;

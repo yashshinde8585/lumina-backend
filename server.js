@@ -4,6 +4,7 @@ dotenv.config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
 const logger = require('./src/config/logger');
@@ -55,6 +56,7 @@ app.use(helmet());
 app.use(express.json());
 
 // Request Logging
+app.use(compression());
 app.use((req, res, next) => {
     const start = Date.now();
     res.on('finish', () => {

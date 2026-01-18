@@ -28,7 +28,8 @@ jspm_packages
 dist
 
 # Database
-database.sqlite
+*.sqlite
+*.sqlite-journal
 
 # Security & Config
 .env
