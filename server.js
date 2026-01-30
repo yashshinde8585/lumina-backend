@@ -23,8 +23,9 @@ sequelize.authenticate()
         logger.info('📦 Connected to SQLite DB');
 
         // Sync models to update schema automatically
-        // 'alter: true' removed to prevent SQLite migration errors since schema matches.
-        await sequelize.sync();
+        // Sync models to update schema automatically
+        // 'alter: true' enabled to ensure schema updates (like adding 'status' column) are applied.
+        await sequelize.sync({ alter: true });
         logger.info('✅ Database synced successfully');
     })
     .catch(err => logger.error('❌ DB Connection Error:', err));
