@@ -31,6 +31,13 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         defaultValue: 'user'
     },
+    status: {
+        type: DataTypes.STRING,
+        defaultValue: 'Active',
+        validate: {
+            isIn: [['Active', 'Banned', 'Suspended']]
+        }
+    },
     // authResponse: {
     //     type: DataTypes.JSON,
     //     allowNull: true

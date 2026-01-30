@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Resume = require('../models/Resume');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
 const logger = require('../config/logger');
@@ -31,7 +32,7 @@ exports.getAllUsers = async (req, res) => {
                 resumes: userData.Resumes ? userData.Resumes.length : 0,
                 spent: 0, // TODO: Implement payment tracking
                 lastActive: getTimeAgo(userData.updatedAt),
-                status: 'Active',
+                status: userData.status || 'Active',
                 createdAt: userData.createdAt,
                 updatedAt: userData.updatedAt
             };
@@ -83,7 +84,7 @@ exports.getUserById = async (req, res) => {
             resumeCount: userData.Resumes ? userData.Resumes.length : 0,
             spent: 0,
             lastActive: getTimeAgo(userData.updatedAt),
-            status: 'Active',
+            status: userData.status || 'Active',
             createdAt: userData.createdAt,
             updatedAt: userData.updatedAt
         };
@@ -239,6 +240,106 @@ exports.getDashboardStats = async (req, res) => {
     }
 };
 
+
+
+// Delete user
+exports.deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Resumes should be deleted via CASCADE if configured, 
+        // but User.destroy() is usually enough if DB foreign keys are set.
+        await user.destroy();
+
+        res.status(200).json({
+            success: true,
+            message: 'User deleted successfully'
+        });
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete user',
+            error: error.message
+        });
+    }
+};
+
+// Update user status (Ban/Activate)
+exports.updateUserStatus = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { status } = req.body;
+
+        if (!['Active', 'Banned', 'Suspended'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status value' });
+        }
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        user.status = status;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: `User status updated to ${status}`,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                status: user.status
+            }
+        });
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update user status',
+            error: error.message
+        });
+    }
+};
+
+// Reset User Password
+exports.resetUserPassword = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Generate secure random password
+        const tempPassword = Math.random().toString(36).slice(-8) + "Rq1!";
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password reset successfully',
+            tempPassword // Return this to admin to share with user
+        });
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to reset password',
+            error: error.message
+        });
+    }
+};
+
 // Get system logs
 exports.getSystemLogs = async (req, res) => {
     try {
@@ -280,5 +381,8 @@ module.exports = {
     impersonateUser: exports.impersonateUser,
     updateUserCredits: exports.updateUserCredits,
     getDashboardStats: exports.getDashboardStats,
-    getSystemLogs: exports.getSystemLogs
+    getSystemLogs: exports.getSystemLogs,
+    deleteUser: exports.deleteUser,
+    updateUserStatus: exports.updateUserStatus,
+    resetUserPassword: exports.resetUserPassword
 };

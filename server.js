@@ -23,9 +23,8 @@ sequelize.authenticate()
         logger.info('📦 Connected to SQLite DB');
 
         // Sync models to update schema automatically
-        // 'alter: true' will automatically add missing columns like 'jobBoardData' and 'role'
-        // without losing data (in most cases).
-        await sequelize.sync({ alter: true });
+        // 'alter: true' removed to prevent SQLite migration errors since schema matches.
+        await sequelize.sync();
         logger.info('✅ Database synced successfully');
     })
     .catch(err => logger.error('❌ DB Connection Error:', err));

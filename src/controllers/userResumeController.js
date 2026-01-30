@@ -40,7 +40,7 @@ exports.getResumes = async (req, res) => {
         const userId = req.userData.userId;
         const resumes = await Resume.findAll({
             where: { userId },
-            attributes: ['id', 'title', 'template', 'updatedAt', 'createdAt', 'fileUrl', 'publicId'], // Optimization: Don't fetch heavy 'content' JSON
+            attributes: ['id', 'title', 'template', 'content', 'updatedAt', 'createdAt', 'fileUrl', 'publicId'],
             order: [['createdAt', 'DESC']]
         });
         res.json(resumes);
