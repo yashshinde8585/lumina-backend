@@ -87,6 +87,10 @@ app.use('/', healthRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Global Error Handler (Must be last)
+const errorHandler = require('./src/middleware/errorHandler');
+app.use(errorHandler);
+
 app.get('/', (req, res) => {
     res.json({
         status: "Online 🚀",
