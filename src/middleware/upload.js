@@ -1,8 +1,17 @@
 const multer = require('multer');
 const path = require('path');
+const os = require('os');
 
-// Use memory storage to keep file in buffer
-const storage = multer.memoryStorage();
+// Use Disk Storage to prevent Memory OOM
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, os.tmpdir());
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /pdf|jpg|jpeg|png/;

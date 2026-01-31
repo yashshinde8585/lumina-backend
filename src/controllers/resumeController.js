@@ -15,20 +15,26 @@ const generate = async (req, res) => {
         res.json(resumeData);
     } catch (error) {
         logger.error(error);
-        let errorMessage = error.message || "Failed to generate resume.";
+        if (error.message && (
+            error.message.includes("404") ||
+            error.message.includes("429") ||
+            error.message.includes("SAFETY") ||
+            error.message.includes("Validation Failed")
+        )) {
+            // Keep specific AI error mapping if useful, or just pass it
+            // For now, let's allow the global handler to log it, but if we want specific status codes:
+            let errorMessage = error.message;
+            if (errorMessage.includes("404")) errorMessage = ERROR_MESSAGES.AI_MODEL_NOT_FOUND;
+            else if (errorMessage.includes("429")) errorMessage = ERROR_MESSAGES.AI_QUOTA_EXCEEDED;
+            else if (errorMessage.includes("SAFETY")) errorMessage = ERROR_MESSAGES.AI_SAFETY_BLOCK;
+            else if (errorMessage.includes("Validation")) return res.status(HTTP_STATUS.UNPROCESSABLE_ENTITY).json({ error: ERROR_MESSAGES.AI_FORMAT_ERROR, details: error.message });
 
-        if (errorMessage.includes("404") && errorMessage.includes("not found")) {
-            errorMessage = ERROR_MESSAGES.AI_MODEL_NOT_FOUND;
-        } else if (errorMessage.includes("429") || errorMessage.includes("Quota") || errorMessage.includes("exhausted")) {
-            errorMessage = ERROR_MESSAGES.AI_QUOTA_EXCEEDED;
-        } else if (errorMessage.includes("SAFETY") || errorMessage.includes("blocked")) {
-            errorMessage = ERROR_MESSAGES.AI_SAFETY_BLOCK;
-        } else if (errorMessage.includes("Validation Failed") || errorMessage.includes("JSON")) {
-            errorMessage = ERROR_MESSAGES.AI_FORMAT_ERROR;
-            return res.status(HTTP_STATUS.UNPROCESSABLE_ENTITY).json({ error: errorMessage, details: error.message });
+            // Pass mapped error with custom status if needed, or just next(error)
+            // Error handler defaults to 500, but we might want 503 for quota etc.
+            // For simplicity and standardization as requested:
+            return next(new Error(errorMessage));
         }
-
-        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: errorMessage });
+        next(error);
     }
 };
 
