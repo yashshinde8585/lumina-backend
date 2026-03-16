@@ -1,11 +1,11 @@
-# AI Resume Generator API
+# AI Resume Generator 
 
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Node](https://img.shields.io/badge/Node-20.0.0-green?logo=node.js)
 ![Express](https://img.shields.io/badge/Express-4.18-gray?logo=express)
 
 ## 📌 Project Title & Description
-**AI Resume Generator API** is the robust backend service powering the AI Resume Generator platform. It provides secure authentication, data persistence, and orchestration for the Google Gemini AI integration, serving as the bridge between the frontend user experience and advanced generative models.
+**AI Resume Generator** is the robust backend service powering the AI Resume Generator platform. It provides secure authentication, data persistence, and orchestration for the Google Gemini AI integration, serving as the bridge between the frontend user experience and advanced generative models.
 
 ## ❓ Problem Statement
 Frontend applications cannot securely store API keys or handle complex server-side logic like rate limiting and database transactions. A dedicated backend is required to:
