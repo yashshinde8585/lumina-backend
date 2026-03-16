@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 # Lumina API — Resume & Job Tracker Backend
+=======
+# AI Resume Generator 
+>>>>>>> 8304b63fc55f9d9d77bc310efb9fecdaec22dd99
 
 > The REST API powering the Lumina resume platform.
 
+<<<<<<< HEAD
 Built with **Express.js** and **Sequelize**, this server handles authentication, AI-driven resume generation via Google Gemini, resume storage, file uploads, and job board persistence.
+=======
+## 📌 Project Title & Description
+**AI Resume Generator** is the robust backend service powering the AI Resume Generator platform. It provides secure authentication, data persistence, and orchestration for the Google Gemini AI integration, serving as the bridge between the frontend user experience and advanced generative models.
+>>>>>>> 8304b63fc55f9d9d77bc310efb9fecdaec22dd99
 
 ---
 
