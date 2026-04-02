@@ -20,7 +20,7 @@ const port = process.env.PORT || 5002;
 // --- Database ---
 sequelize.authenticate()
     .then(async () => {
-        logger.info('📦 Connected to SQLite DB');
+        logger.info(`📦 Connected to ${sequelize.getDialect()} DB`);
 
         // Sync models to update schema automatically
         // Sync models to update schema automatically

@@ -6,35 +6,26 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 let sequelize;
 
-if (isProduction) {
-    // HOSTED: Use PostgreSQL Connection String (Render)
-    if (!process.env.DATABASE_URL) {
-        console.warn("⚠️  WARNING: DATABASE_URL is missing in Production! Falling back to SQLite temporary DB.");
-        sequelize = new Sequelize({
-            dialect: 'sqlite',
-            storage: path.join(__dirname, '../../database.sqlite'),
-            logging: false
-        });
-    } else {
-        sequelize = new Sequelize(process.env.DATABASE_URL, {
-            dialect: 'postgres',
-            logging: false,
-            dialectOptions: {
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false // Required for Render's self-signed certs
-                }
-            },
-            pool: {
-                max: 5,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
+if (process.env.DATABASE_URL) {
+    // USE POSTGRESQL (Neon/Render/Local Postgres)
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialect: 'postgres',
+        logging: false,
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
             }
-        });
-    }
+        },
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
+        }
+    });
 } else {
-    // LOCAL: Keep using SQLite for easy development
+    // LOCAL FALLBACK: SQLite
     sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: path.join(__dirname, '../../database.sqlite'),
@@ -44,7 +35,7 @@ if (isProduction) {
             min: 0,
             acquire: 30000,
             idle: 10000,
-            evict: 10000 // Removes stale connections
+            evict: 10000
         }
     });
 }
